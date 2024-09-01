@@ -27,7 +27,6 @@ const beginFileObservation = async () => {
 };
 
 const initializeListeners = (observation: Observation) => {
-
   if (!checkFileExists(observation.filePath)) {
     console.warn(`File does not exist: ${observation.filePath}`);
     return;
@@ -42,7 +41,7 @@ const initializeListeners = (observation: Observation) => {
     lastReadPositionMap: new Map(),
   };
 
-  w.watcher.on("add", async (file: string) => {  
+  w.watcher.on("add", async (file: string) => {
     console.info(`[info] Observe file: ${file}`);
     const size = await getFileSize(file);
     w.lastReadPositionMap.set(file, size);
@@ -83,7 +82,9 @@ const initializeListeners = (observation: Observation) => {
         w.lastReadPositionMap.set(file, size);
       })
       .on("error", (err) => {
-        console.error(`[error] An error occurred while loading the file: ${err}`);
+        console.error(
+          `[error] An error occurred while loading the file: ${err}`
+        );
       });
   });
 
@@ -113,6 +114,6 @@ const restartObservation = async () => {
   console.info("[info] Restart observing...");
   finishFileObservation();
   await beginFileObservation();
-}
+};
 
-export { beginFileObservation, finishFileObservation, restartObservation }
+export { beginFileObservation, finishFileObservation, restartObservation };

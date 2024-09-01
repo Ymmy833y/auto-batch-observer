@@ -5,33 +5,53 @@ import config from "../config";
 
 export const checkFileExists = (filePath: string): boolean => {
   return fs.existsSync(filePath);
-}
+};
 
 export const getFileSize = async (file: string): Promise<number> => {
-  return fs.promises.stat(file)
-    .then(stats => stats.size)
-    .catch(error => {
+  return fs.promises
+    .stat(file)
+    .then((stats) => stats.size)
+    .catch((error) => {
       console.error(`[error] Failed to get file information: ${error}`);
       return 0;
     });
-}
+};
 
 export const getFileEncoding = (filePath: string): BufferEncoding => {
   const buffer = fs.readFileSync(filePath, { encoding: null });
 
-  // TODO chardet.detectの戻り値がBufferEncodingではない場合をTryChatchする
-  const detectedEncoding = chardet.detect(buffer) as BufferEncoding | null;
-  return detectedEncoding ? detectedEncoding : 'utf-8';
-}
+  try {
+    const detectedEncoding = chardet.detect(buffer);
 
-export const readObservationJson = async (): Promise<Observations | undefined> => {
-  const data = await fs.promises.readFile(config.dataDirPath, "utf-8");
+    if (detectedEncoding && isBufferEncoding(detectedEncoding)) {
+      return detectedEncoding as BufferEncoding;
+    } else {
+      throw new Error("Detected encoding is not a valid BufferEncoding.");
+    }
+  } catch (error) {
+    console.error(
+      `Failed to detect encoding: ${error}. Defaulting to 'utf-8'.`
+    );
+    return "utf-8";
+  }
+};
+
+const isBufferEncoding = (encoding: string): encoding is BufferEncoding => {
+  return Buffer.isEncoding(encoding);
+};
+
+export const readObservationJson = async (): Promise<
+  Observations | undefined
+> => {
+  const data = await fs.promises.readFile(config.dataFilePath, "utf-8");
   try {
     const parsedData = JSON.parse(data);
     if (isObservations(parsedData)) {
       return parsedData;
     } else {
-      console.warn("[warn] Parsed JSON is not in the expected Observations format.");
+      console.warn(
+        "[warn] Parsed JSON is not in the expected Observations format."
+      );
       return undefined;
     }
   } catch (error) {
@@ -40,7 +60,9 @@ export const readObservationJson = async (): Promise<Observations | undefined> =
   }
 };
 
-export const writeObservationJson = async (data: Observations): Promise<void> => {
+export const writeObservationJson = async (
+  data: Observations
+): Promise<void> => {
   const jsonData = JSON.stringify(data, null, 2);
-  await fs.promises.writeFile(config.dataDirPath, jsonData, "utf-8");
+  await fs.promises.writeFile(config.dataFilePath, jsonData, "utf-8");
 };

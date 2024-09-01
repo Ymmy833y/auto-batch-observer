@@ -12,7 +12,9 @@ export interface Observation {
 
 export const isObservation = (obj: any): obj is Observation => {
   return (
-    obj &&
+    obj !== null &&
+    obj !== undefined &&
+    typeof obj === "object" &&
     typeof obj.name === "string" &&
     typeof obj.filePath === "string" &&
     Array.isArray(obj.triggers) &&
@@ -22,7 +24,9 @@ export const isObservation = (obj: any): obj is Observation => {
 
 export const isObservations = (obj: any): obj is Observations => {
   return (
-    obj &&
+    obj !== null &&
+    obj !== undefined &&
+    typeof obj === "object" &&
     Array.isArray(obj.observations) &&
     obj.observations.every(isObservation)
   );

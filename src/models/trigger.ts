@@ -5,7 +5,9 @@ export interface Trigger {
 
 export const isTrigger = (obj: any): obj is Trigger => {
   return (
-    obj &&
+    obj !== null &&
+    obj !== undefined &&
+    typeof obj === "object" &&
     typeof obj.pattern === "string" &&
     typeof obj.script === "string"
   );
