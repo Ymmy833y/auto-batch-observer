@@ -8,8 +8,8 @@
     "start:dev": "nodemon --exec ts-node src/server.ts",
     "test": "jest --runInBand",
     "test:watch": "npm run test -- --watch",
-    "lint": "eslint src test --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint src test --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "clean": "rm -rf dist",
     "build": "tsc",
     "prepublishOnly": "npm run clean && npm run build"

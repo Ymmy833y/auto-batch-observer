@@ -1,9 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelector("#observation-add").addEventListener("click", () => {
-    const observationsElem = document.querySelector("#observation");
-    const index = observationsElem.getElementsByTagName("form").length;
-    const newElem = document.createElement("div");
-    newElem.classList.add("accordion-item");
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('#observation-add').addEventListener('click', () => {
+    const observationsElem = document.querySelector('#observation');
+    const index = observationsElem.getElementsByTagName('form').length;
+    const newElem = document.createElement('div');
+    newElem.classList.add('accordion-item');
     newElem.innerHTML = `
       <h2 class="accordion-header" id="header-${index}">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#content-${index}" aria-expanded="true" aria-controls="content-${index}">
@@ -48,11 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const addTrigger = (e) => {
-    const id = e.id.replace("triggers-add-", "");
-    const ulElem = document.querySelector("#triggers-" + id);
-    const liIndex = ulElem.getElementsByTagName("li").length;
-    const newLiElem = document.createElement("li");
-    newLiElem.classList.add("list-group-item");
+    const id = e.id.replace('triggers-add-', '');
+    const ulElem = document.querySelector('#triggers-' + id);
+    const liIndex = ulElem.getElementsByTagName('li').length;
+    const newLiElem = document.createElement('li');
+    newLiElem.classList.add('list-group-item');
     newLiElem.innerHTML = `
       <div class="row">
         <div class="col-2">
