@@ -7,8 +7,8 @@ export const createApp = (): Express => {
   const app: Express = express();
 
   app.set("view engine", "ejs");
-  app.set("views", path.join(__dirname, "../views"));
-  app.use("/static", express.static(path.join(__dirname, "../static")));
+  app.set('views', path.join(process.cwd(), 'views'));
+  app.use('/static', express.static(path.join(process.cwd(), 'static')));
 
   app.use(express.urlencoded({ extended: false, limit: "25mb" }));
 

@@ -1,5 +1,9 @@
 module.exports = [
   {
+    // files: [
+    //   'src/**/*.ts',
+    //   'tests/**/*.ts',
+    // ],
     ignores: [
       'node_modules/**',
       'dist/**',
@@ -15,7 +19,7 @@ module.exports = [
     },
     rules: {
       indent: ['error', 2],
-      'linebreak-style': ['error', 'unix'],
+      'linebreak-style': ['error', 'windows'],
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
     },
