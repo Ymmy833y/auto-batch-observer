@@ -4,92 +4,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="static//css/bootstrap.min.css">
+  <link rel="stylesheet" href="static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="static/css/main.css">
   <title>Auto Batch Observer</title>
 </head>
 
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+      <path
+        d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
+    </symbol>
+    <symbol id="x-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+      <path
+        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+    </symbol>
+  </svg>
   <header class="container-lg my-3">
-    <div class=" d-flex justify-content-between">
-      <h1 class="fs-2">Auto Batch Observer</h1>
-    </div>
+    <h1 class="fs-2 text-center">Auto Batch Observer</h1>
     <hr>
   </header>
   <main class="container-lg">
-    <div class="d-flex justify-content-between mb-2 pb-2">
-      <h3>
-        <span class="px-2 border-bottom border-2">Observation</span>
-      </h3>
-      <button class="btn btn-outline-info btn-sm px-3" id="observation-add" type="button">Add</button>
-    </div>
-    <div class="accordion" id="observation">
-      <% observations.forEach((observation, i)=> { %>
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="header-<%= i %>">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#content-<%= i %>" aria-expanded="false" aria-controls="content-<%= i %>">
-              <%= observation.name %>
-            </button>
-          </h2>
-          <div id="content-<%= i %>" class="accordion-collapse collapse" aria-labelledby="header-<%= i %>">
-            <div class="accordion-body">
-              <form method="post" action="/update">
-                <input type="hidden" name="index" value="<%= i %>">
-                <div class="row mb-2">
-                  <div class="col-2">
-                    <label for="name-<%= i %>" class="col-form-label">Name</label>
+    <div class="d-flex align-items-start">
+      <div class="nav flex-column nav-pills border-end border-bottom rounded-end me-2">
+        <button class="nav-link text-uppercase font-monospace vertical-text py-4 active" data-bs-toggle="pill"
+          data-bs-target="#batchResults-tab" type="button" aria-selected="true">
+          batchResult
+        </button>
+        <button class="nav-link text-uppercase font-monospace vertical-text py-4" data-bs-toggle="pill"
+          data-bs-target="#setting-tab" type="button">
+          Setting
+        </button>
+      </div>
+      <div class="tab-content w-100">
+        <div class="tab-pane fade show active" id="batchResults-tab">
+          <div class="mb-3">
+            <h2><span class="fs-3 px-2 border-bottom border-2">batchResult</span></h2>
+          </div>
+          <div class="list-group" id="batchResults-list">
+            <% if (batchResults.length == 0) { %>
+              <div class="list-group-item text-center py-3" id="batchResults-none">
+                No batch operations are running.
+              </div>
+            <% } %>
+            <% batchResults.forEach((batchResult, i)=> { %>
+              <div class="list-group-item">
+                <a class="d-flex justify-content-between btn px-0" data-bs-toggle="collapse" href="#batchResult-<%= i %>">
+                  <div class="d-flex align-items-center">
+                    <% if (batchResult.isSuccess) { %>
+                      <svg width="20" height="20" class="text-success me-2" fill="currentColor">
+                        <use xlink:href="#check-circle"></use>
+                      </svg>
+                    <% } else { %>
+                      <svg width="20" height="20" class="text-danger me-2" fill="currentColor">
+                        <use xlink:href="#x-circle"></use>
+                      </svg>
+                    <% } %>
+                    <div class="mb-1 text-start">
+                      <h5 class="me-2 mb-1"><%= batchResult.name %></h5>
+                      <span class="me-1">></span><span class="me-2"><%= batchResult.script %></span>
+                    </div>
                   </div>
-                  <div class="col-10">
-                    <input type="text" name="name" id="name-<%= i %>" class="form-control"
-                      value="<%= observation.name %>">
-                  </div>
+                  <small><%= batchResult.date %></small>
+                </a>
+                <div class="collapse" id="batchResult-<%= i %>">
+                  <div class="card card-body"><%= batchResult.body %></div>
                 </div>
-                <div class="row mb-2">
-                  <div class="col-2">
-                    <label for="filepath-<%= i %>" class="col-form-label">FilePath</label>
-                  </div>
-                  <div class="col-10">
-                    <input type="text" name="filePath" id="filepath-<%= i %>" class="form-control"
-                      value="<%= observation.filePath %>">
-                  </div>
-                </div>
-                <div class="mb-2">
-                  <div class="d-flex justify-content-between mb-2">
-                    <p>Triggers</p>
-                    <button class="btn btn-outline-info btn-sm px-3" id="triggers-add-<%= i %>" type="button"
-                      onclick="addTrigger(this)">Add</button>
-                  </div>
-                  <ul class="mb-2 list-group" id="triggers-<%= i %>">
-                    <% observation.triggers.forEach((trigger, j)=> { %>
-                      <li class="list-group-item">
-                        <div class="row">
-                          <div class="col-2">
-                            <label for="pattern-<%= i %>-<%= j %>" class="col-form-label">Pattern</label>
-                          </div>
-                          <div class="col-10">
-                            <input type="text" name="pattern" id="pattern-<%= i %>-<%= j %>" class="form-control"
-                              value="<%= trigger.pattern %>">
-                          </div>
-                          <div class="col-2">
-                            <label for="script-<%= i %>-<%= j %>" class="col-form-label">Script</label>
-                          </div>
-                          <div class="col-10">
-                            <textarea name="script" id="script-<%= i %>-<%= j %>"
-                              class="form-control"><%= trigger.script %></textarea>
-                          </div>
-                        </div>
-                      </li>
-                      <% }) %>
-                  </ul>
-                </div>
-                <div class="mb-2 mt-3 d-flex justify-content-end">
-                  <button type="submit" class="btn btn-primary w-25">Update</button>
-                </div>
-              </form>
-            </div>
+              </div>
+            <% }) %>
           </div>
         </div>
-        <% }) %>
+        <div class="tab-pane fade" id="setting-tab">
+          <div class="d-flex justify-content-between mb-3">
+            <h2><span class="fs-3 px-2 border-bottom border-2">Observation</span></h2>
+            <button class="btn btn-outline-info btn-sm px-3" id="observation-add" type="button">Add</button>
+          </div>
+          <div class="accordion" id="observation">
+            <% observations.forEach((observation, i)=> { %>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="header-<%= i %>">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#content-<%= i %>" aria-expanded="false" aria-controls="content-<%= i %>">
+                    <%= observation.name %>
+                  </button>
+                </h2>
+                <div id="content-<%= i %>" class="accordion-collapse collapse" aria-labelledby="header-<%= i %>">
+                  <div class="accordion-body">
+                    <form method="post" action="/update">
+                      <input type="hidden" name="index" value="<%= i %>">
+                      <div class="row mb-2">
+                        <div class="col-2">
+                          <label for="name-<%= i %>" class="col-form-label">Name</label>
+                        </div>
+                        <div class="col-10">
+                          <input type="text" name="name" id="name-<%= i %>" class="form-control"
+                            value="<%= observation.name %>">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="col-2">
+                          <label for="filepath-<%= i %>" class="col-form-label">FilePath</label>
+                        </div>
+                        <div class="col-10">
+                          <input type="text" name="filePath" id="filepath-<%= i %>" class="form-control"
+                            value="<%= observation.filePath %>">
+                        </div>
+                      </div>
+                      <div class="mb-2">
+                        <div class="d-flex justify-content-between mb-2">
+                          <p>Triggers</p>
+                          <button class="btn btn-outline-info btn-sm px-3" id="triggers-add-<%= i %>" type="button"
+                            onclick="addTrigger(this)">Add</button>
+                        </div>
+                        <ul class="mb-2 list-group" id="triggers-<%= i %>">
+                          <% observation.triggers.forEach((trigger, j)=> { %>
+                            <li class="list-group-item">
+                              <div class="row">
+                                <div class="col-2">
+                                  <label for="pattern-<%= i %>-<%= j %>" class="col-form-label">Pattern</label>
+                                </div>
+                                <div class="col-10">
+                                  <input type="text" name="pattern" id="pattern-<%= i %>-<%= j %>" class="form-control"
+                                    value="<%= trigger.pattern %>">
+                                </div>
+                                <div class="col-2">
+                                  <label for="script-<%= i %>-<%= j %>" class="col-form-label">Script</label>
+                                </div>
+                                <div class="col-10">
+                                  <textarea name="script" id="script-<%= i %>-<%= j %>"
+                                    class="form-control"><%= trigger.script %></textarea>
+                                </div>
+                              </div>
+                            </li>
+                            <% }) %>
+                        </ul>
+                      </div>
+                      <div class="mb-2 mt-3 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary w-25">Update</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
   <script src="static/js/bootstrap.min.js"></script>

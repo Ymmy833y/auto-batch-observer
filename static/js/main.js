@@ -1,3 +1,36 @@
+const eventSource = new EventSource('/events');
+
+eventSource.onmessage = function(event) {
+  const batchResult = JSON.parse(event.data);
+
+  const batchResultsListElem = document.querySelector("#batchResults-list");
+  const index = batchResultsListElem.querySelectorAll(".list-group-item").length;
+  const newElem = document.createElement("div");
+  newElem.classList.add("list-group-item");
+  newElem.innerHTML = `
+    <a class="d-flex justify-content-between btn px-0" data-bs-toggle="collapse" href="#batchResult-${index}">
+      <div class="d-flex align-items-center">
+        <svg width="20" height="20" class="text-${batchResult.isSuccess ? "success" : "danger"} me-2" fill="currentColor">
+          <use xlink:href="#${batchResult.isSuccess ? "check" : "x"}-circle"></use>
+        </svg>
+        <div class="mb-1 text-start">
+          <h5 class="me-2 mb-1">${batchResult.name}</h5>
+          <span class="me-1">></span><span class="me-2">${batchResult.script}</span>
+        </div>
+      </div>
+      <small>${batchResult.date}</small>
+    </a>
+    <div class="collapse" id="batchResult-${index}">
+      <div class="card card-body">${batchResult.body}</div>
+    </div>`;
+  batchResultsListElem.appendChild(newElem);
+
+  const noneElem = document.querySelector('#batchResults-none');
+  if (noneElem) {
+    noneElem.remove();
+  }
+};
+
 document.querySelector('#observation-add').addEventListener('click', () => {
   const observationsElem = document.querySelector('#observation');
   const index = observationsElem.getElementsByTagName('form').length;

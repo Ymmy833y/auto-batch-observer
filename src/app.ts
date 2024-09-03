@@ -14,6 +14,7 @@ export const createApp = (): Express => {
 
   app.get("/", controller.index);
   app.post("/update", controller.update);
+  app.get("/events", controller.events);
 
   app.use(controller.notFound);
 

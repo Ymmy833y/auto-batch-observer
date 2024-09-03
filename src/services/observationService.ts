@@ -8,6 +8,8 @@ import {
   getFileSize,
   readObservationJson,
 } from "../utils";
+import { sendLog } from "./sseService";
+import { getCurrentDate } from "../utils/dateUtil";
 
 let watchers: Watcher[] = [];
 
@@ -71,10 +73,26 @@ const initializeListeners = (observation: Observation) => {
           if (changeContent.includes(trigger.pattern)) {
             console.info(`[info] Triggered the script: ${trigger.script}`);
             runCommand(trigger.script)
-              .then((res) =>
-                console.info(`[info] Command executed successfully: ${res}`)
-              )
-              .catch((err) => console.error(`[error] ${err}`));
+              .then((res) => {
+                console.info(`[info] Command executed successfully: ${res}`);
+                sendLog({
+                  name: w.observation.name,
+                  script: trigger.script,
+                  isSuccess: true,
+                  body: res,
+                  date: getCurrentDate(),
+                });
+              })
+              .catch((err) => {
+                console.error(`[error] ${err}`);
+                sendLog({
+                  name: w.observation.name,
+                  script: trigger.script,
+                  isSuccess: false,
+                  body: err,
+                  date: getCurrentDate(),
+                });
+              });
           }
         }
       })

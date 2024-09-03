@@ -1,3 +1,4 @@
+export * from "./batchResult";
 export * from "./observation";
 export * from "./observationForm";
 export * from "./trigger";
