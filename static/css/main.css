@@ -4,3 +4,9 @@
   writing-mode: vertical-rl;
   text-orientation: upright;
 }
+
+.log-body {
+  word-break: break-word;
+  max-height: 50vh;
+  overflow: auto;
+}

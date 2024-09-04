@@ -1,27 +1,67 @@
 const eventSource = new EventSource('/events');
 
-eventSource.onmessage = function(event) {
-  const batchResult = JSON.parse(event.data);
+eventSource.addEventListener('batchTrigger', (event) => {
+  const batchTrigger = JSON.parse(event.data);
 
-  const batchResultsListElem = document.querySelector("#batchResults-list");
-  const index = batchResultsListElem.querySelectorAll(".list-group-item").length;
-  const newElem = document.createElement("div");
-  newElem.classList.add("list-group-item");
+  const newElem = document.createElement('div');
+  newElem.classList.add('toast');
+  newElem.setAttribute('role', 'alert');
+  newElem.setAttribute('aria-live', 'assertive');
+  newElem.setAttribute('aria-atomic', 'true');
+  newElem.setAttribute('data-bs-autohide', 'false');
+
   newElem.innerHTML = `
-    <a class="d-flex justify-content-between btn px-0" data-bs-toggle="collapse" href="#batchResult-${index}">
+    <div class="toast-header">
+      <strong class="me-auto">Triggered the script</strong>
+      <small class="text-muted">${batchTrigger.date}</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      <h5 class="me-2 mb-1">${batchTrigger.name}</h5>
+      <span class="me-1">></span><span class="me-2">${batchTrigger.script}</span>
+    </div>`;
+
+  document.querySelector('#toastContainer').appendChild(newElem);
+
+  const toast = new bootstrap.Toast(newElem);
+  toast.show();
+
+  setTimeout(() => {
+    toast.hide();
+  }, 30 * 1000);
+});
+
+eventSource.addEventListener('batchResults', (event) => {
+  const batchResults = JSON.parse(event.data);
+
+  const escapedBody = batchResults.body
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\r\n/g, '<br>')
+    .replace(/\n/g, '<br>');
+
+  const batchResultsListElem = document.querySelector('#batchResults-list');
+  const index = batchResultsListElem.querySelectorAll('.list-group-item').length;
+  const newElem = document.createElement('div');
+  newElem.classList.add('list-group-item');
+  newElem.innerHTML = `
+    <a class="d-flex justify-content-between btn px-0" data-bs-toggle="collapse" href="#batchResults-${index}">
       <div class="d-flex align-items-center">
-        <svg width="20" height="20" class="text-${batchResult.isSuccess ? "success" : "danger"} me-2" fill="currentColor">
-          <use xlink:href="#${batchResult.isSuccess ? "check" : "x"}-circle"></use>
+        <svg width="20" height="20" class="text-${batchResults.isSuccess ? 'success' : 'danger'} me-2" fill="currentColor">
+          <use xlink:href="#${batchResults.isSuccess ? 'check' : 'x'}-circle"></use>
         </svg>
         <div class="mb-1 text-start">
-          <h5 class="me-2 mb-1">${batchResult.name}</h5>
-          <span class="me-1">></span><span class="me-2">${batchResult.script}</span>
+          <h5 class="me-2 mb-1">${batchResults.name}</h5>
+          <span class="me-1">></span><span class="me-2">${batchResults.script}</span>
         </div>
       </div>
-      <small>${batchResult.date}</small>
+      <small>${batchResults.date}</small>
     </a>
-    <div class="collapse" id="batchResult-${index}">
-      <div class="card card-body">${batchResult.body}</div>
+    <div class="collapse" id="batchResults-${index}">
+      <div class="card card-body log-body">${escapedBody}</div>
     </div>`;
   batchResultsListElem.appendChild(newElem);
 
@@ -29,7 +69,7 @@ eventSource.onmessage = function(event) {
   if (noneElem) {
     noneElem.remove();
   }
-};
+});
 
 document.querySelector('#observation-add').addEventListener('click', () => {
   const observationsElem = document.querySelector('#observation');

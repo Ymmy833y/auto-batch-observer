@@ -8,7 +8,7 @@ import {
   getFileSize,
   readObservationJson,
 } from "../utils";
-import { sendLog } from "./sseService";
+import { sendBatchResults, sendBatchTrigger } from "./sseService";
 import { getCurrentDate } from "../utils/dateUtil";
 
 let watchers: Watcher[] = [];
@@ -72,10 +72,15 @@ const initializeListeners = (observation: Observation) => {
         for (const trigger of w.observation.triggers) {
           if (changeContent.includes(trigger.pattern)) {
             console.info(`[info] Triggered the script: ${trigger.script}`);
+            sendBatchTrigger({
+              name: w.observation.name,
+              script: trigger.script,
+              date: getCurrentDate(),
+            });
             runCommand(trigger.script)
               .then((res) => {
                 console.info(`[info] Command executed successfully: ${res}`);
-                sendLog({
+                sendBatchResults({
                   name: w.observation.name,
                   script: trigger.script,
                   isSuccess: true,
@@ -85,7 +90,7 @@ const initializeListeners = (observation: Observation) => {
               })
               .catch((err) => {
                 console.error(`[error] ${err}`);
-                sendLog({
+                sendBatchResults({
                   name: w.observation.name,
                   script: trigger.script,
                   isSuccess: false,
