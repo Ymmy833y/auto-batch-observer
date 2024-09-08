@@ -13,7 +13,7 @@ export const removeClient = (res: Response) => {
 };
 
 export const sendBatchResults = (batchResults: BatchResults) => {
-  const jsonData = JSON.stringify(batchResults);  
+  const jsonData = JSON.stringify(batchResults);
   batchResultsList.push(batchResults);
   clients.forEach((client) => {
     client.write(`event: batchResults\ndata: ${jsonData}\n\n`);

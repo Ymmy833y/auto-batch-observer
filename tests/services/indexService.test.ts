@@ -1,26 +1,26 @@
-import { getObservations } from "../../src/services/indexService";
-import { readObservationJson } from "../../src/utils/fileUtil";
-import { isObservations } from "../../src/models";
+import { getObservations } from '../../src/services/indexService';
+import { readObservationJson } from '../../src/utils/fileUtil';
+import { isObservations } from '../../src/models';
 
-jest.mock("../../src/utils/fileUtil", () => ({
+jest.mock('../../src/utils/fileUtil', () => ({
   readObservationJson: jest.fn(),
 }));
 
-jest.mock("../../src/models", () => ({
+jest.mock('../../src/models', () => ({
   isObservations: jest.fn(),
 }));
 
-describe("Services indexService Test", () => {
-  describe("getObservations", () => {
+describe('Services indexService Test', () => {
+  describe('getObservations', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    it("should return observations if jsonData is valid", async () => {
+    it('should return observations if jsonData is valid', async () => {
       const mockObservations = [
         {
-          name: "Test Observation 1",
-          filePath: "/path/to/file1",
+          name: 'Test Observation 1',
+          filePath: '/path/to/file1',
           triggers: [],
         },
       ];
@@ -38,8 +38,8 @@ describe("Services indexService Test", () => {
       expect(result).toEqual(mockObservations);
     });
 
-    it("should return an empty array if jsonData is invalid", async () => {
-      const mockJsonData = { someInvalidKey: "invalid data" };
+    it('should return an empty array if jsonData is invalid', async () => {
+      const mockJsonData = { someInvalidKey: 'invalid data' };
 
       (readObservationJson as jest.Mock).mockResolvedValue(mockJsonData);
       (
@@ -53,7 +53,7 @@ describe("Services indexService Test", () => {
       expect(result).toEqual([]);
     });
 
-    it("should return an empty array if jsonData is undefined", async () => {
+    it('should return an empty array if jsonData is undefined', async () => {
       (readObservationJson as jest.Mock).mockResolvedValue(undefined);
 
       const result = await getObservations();

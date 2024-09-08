@@ -1,25 +1,25 @@
-import type { Request, Response } from "express";
-import { getObservations } from "../services/indexService";
-import { updateObservations } from "../services/updateService";
-import { restartObservation } from "../services/observationService";
-import { addClient, getBatchResultsList, removeClient } from "../services/sseService";
+import type { Request, Response } from 'express';
+import { getObservations } from '../services/indexService';
+import { updateObservations } from '../services/updateService';
+import { restartObservation } from '../services/observationService';
+import { addClient, getBatchResultsList, removeClient } from '../services/sseService';
 
 export const index = async (req: Request, res: Response) => {
-  console.info("[info] index is called.");
+  console.info('[info] index is called.');
 
   const batchResultsList = getBatchResultsList();
   const observations = await getObservations();
 
-  res.render("index", { batchResultsList, observations });
+  res.render('index', { batchResultsList, observations });
 };
 
 export const update = async (req: Request, res: Response) => {
-  console.info("[info] update is called.");
+  console.info('[info] update is called.');
 
   try {
-    const { index, name, filePath, pattern, script } = req.body;
-    await updateObservations({ index, name, filePath, pattern, script });
-    await restartObservation();
+    const { index, name, filePath, pattern, script, remove } = req.body;
+    await updateObservations({ index, name, filePath, pattern, script, remove });
+    restartObservation();
 
     res.redirect('/');
   } catch (error) {
@@ -45,5 +45,5 @@ export const events = (req: Request, res: Response) => {
 }
 
 export const notFound = (req: Request, res: Response) => {
-  res.status(404).send("Not found");
+  res.status(404).send('Not found');
 };

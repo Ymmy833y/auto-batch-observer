@@ -1,27 +1,27 @@
-import fs from "fs";
-import chokidar from "chokidar";
-import { exec } from "child_process";
-import { isObservations, Observation, Watcher } from "../models";
+import fs from 'fs';
+import chokidar from 'chokidar';
+import { exec } from 'child_process';
+import { isObservations, Observation, Watcher } from '../models';
 import {
   checkFileExists,
   getFileEncoding,
   getFileSize,
   readObservationJson,
-} from "../utils";
-import { sendBatchResults, sendBatchTrigger } from "./sseService";
-import { getCurrentDate } from "../utils/dateUtil";
+} from '../utils';
+import { sendBatchResults, sendBatchTrigger } from './sseService';
+import { getCurrentDate } from '../utils/dateUtil';
 
 let watchers: Watcher[] = [];
 
 const beginFileObservation = async () => {
   const jsonData = await readObservationJson();
   if (!jsonData) {
-    console.warn("[warn] Failed to load observations data.");
+    console.warn('[warn] Failed to load observations data.');
     return;
   }
 
   if (!isObservations(jsonData)) {
-    console.warn("[warn] No files to be observed have been set.");
+    console.warn('[warn] No files to be observed have been set.');
     return;
   }
 
@@ -43,13 +43,13 @@ const initializeListeners = (observation: Observation) => {
     lastReadPositionMap: new Map(),
   };
 
-  w.watcher.on("add", async (file: string) => {
+  w.watcher.on('add', async (file: string) => {
     console.info(`[info] Observe file: ${file}`);
     const size = await getFileSize(file);
     w.lastReadPositionMap.set(file, size);
   });
 
-  w.watcher.on("change", async (file: string) => {
+  w.watcher.on('change', async (file: string) => {
     console.info(`[info] File ${file} has been changed!`);
 
     const size = await getFileSize(file);
@@ -64,7 +64,7 @@ const initializeListeners = (observation: Observation) => {
       end: size - 1,
       encoding,
     })
-      .on("data", (chunk) => {
+      .on('data', (chunk) => {
         const changeContent = Buffer.isBuffer(chunk)
           ? chunk.toString(encoding)
           : chunk;
@@ -101,10 +101,10 @@ const initializeListeners = (observation: Observation) => {
           }
         }
       })
-      .on("end", () => {
+      .on('end', () => {
         w.lastReadPositionMap.set(file, size);
       })
-      .on("error", (err) => {
+      .on('error', (err) => {
         console.error(
           `[error] An error occurred while loading the file: ${err}`
         );
@@ -134,7 +134,7 @@ const finishFileObservation = () => {
 };
 
 const restartObservation = async () => {
-  console.info("[info] Restart observing...");
+  console.info('[info] Restart observing...');
   finishFileObservation();
   await beginFileObservation();
 };

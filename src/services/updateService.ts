@@ -3,15 +3,21 @@ import {
   isObservations,
   ObservationForm,
   Trigger,
-} from "../models";
-import { readObservationJson, writeObservationJson } from "../utils";
+} from '../models';
+import { readObservationJson, writeObservationJson } from '../utils';
 
-export const updateObservations = async (form: ObservationForm) => {  
-  const updateObservation = convertToObservation(form);
-
+export const updateObservations = async (form: ObservationForm) => {
   const jsonData = await readObservationJson();
   const observations =
     jsonData && isObservations(jsonData) ? jsonData.observations : [];
+
+  if (form.remove !== undefined && form.remove === 'on') {
+    observations.splice(parseInt(form.index), 1)
+    await writeObservationJson({ observations });
+    return;
+  }
+
+  const updateObservation = convertToObservation(form);
 
   if (observations.length === 0) {
     await writeObservationJson({ observations: [updateObservation] });
@@ -35,15 +41,15 @@ const generateTriggers = (
   pattern: string | string[] | undefined,
   script: string | string[] | undefined
 ): Trigger[] => {
-  if (typeof pattern === "string" && typeof script === "string") {
+  if (typeof pattern === 'string' && typeof script === 'string') {
     if (!isTriggerEmpty(pattern, script)) {
       return [generateTrigger(pattern, script)];
     } else {
       return [];
     }
-  } else if (typeof pattern === "undefined" || typeof script === "undefined") {
+  } else if (typeof pattern === 'undefined' || typeof script === 'undefined') {
     return [];
-  } else if (typeof pattern !== "string" && typeof script !== "string") {
+  } else if (typeof pattern !== 'string' && typeof script !== 'string') {
     if (pattern.length === script.length) {
       const validIndexes = pattern
         .map((_, index) => index)
@@ -57,7 +63,7 @@ const generateTriggers = (
       );
     }
   }
-  throw new Error("The form input is invalid");
+  throw new Error('The form input is invalid');
 };
 
 const generateTrigger = (pattern: string, script: string): Trigger => ({
@@ -66,5 +72,5 @@ const generateTrigger = (pattern: string, script: string): Trigger => ({
 });
 
 const isTriggerEmpty = (pattern: string, script: string): boolean => {
-  return pattern === "" && script === "";
+  return pattern === '' && script === '';
 };

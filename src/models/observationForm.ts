@@ -4,4 +4,5 @@ export interface ObservationForm {
   filePath: string;
   pattern: string | string[] | undefined;
   script: string | string[] | undefined;
+  remove: 'on' | undefined;
 }
