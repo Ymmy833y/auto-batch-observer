@@ -7,11 +7,11 @@ import {
   getFileEncoding,
   getFileSize,
   readObservationJson,
+  getCurrentDate,
 } from '../utils';
 import { sendBatchResults, sendBatchTrigger } from './sseService';
-import { getCurrentDate } from '../utils/dateUtil';
 
-let watchers: Watcher[] = [];
+const watchers: Watcher[] = [];
 
 const beginFileObservation = async () => {
   const jsonData = await readObservationJson();
@@ -128,15 +128,20 @@ const runCommand = (command: string): Promise<string> => {
   });
 };
 
-const finishFileObservation = () => {
-  watchers.forEach((w) => w.watcher.close());
-  watchers = [];
+const finishFileObservation = async () => {
+  await Promise.all(watchers.map((w) => w.watcher.close()));
+  watchers.length = 0;
 };
 
 const restartObservation = async () => {
   console.info('[info] Restart observing...');
-  finishFileObservation();
+  await finishFileObservation();
   await beginFileObservation();
 };
 
-export { beginFileObservation, finishFileObservation, restartObservation };
+export {
+  watchers,
+  beginFileObservation,
+  finishFileObservation,
+  restartObservation,
+};

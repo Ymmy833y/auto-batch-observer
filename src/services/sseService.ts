@@ -1,15 +1,15 @@
-import { Response } from "express";
-import { BatchResults, BatchTrigger } from "../models";
+import { Response } from 'express';
+import { BatchResults, BatchTrigger } from '../models';
 
-let clients: Response[] = [];
-let batchResultsList: BatchResults[] = [];
+const clients: Response[] = [];
+const batchResultsList: BatchResults[] = [];
 
 export const addClient = (res: Response) => {
   clients.push(res);
 };
 
 export const removeClient = (res: Response) => {
-  clients = clients.filter((client) => client !== res);
+  clients.filter((client) => client !== res);
 };
 
 export const sendBatchResults = (batchResults: BatchResults) => {

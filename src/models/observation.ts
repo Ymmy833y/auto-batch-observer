@@ -10,7 +10,7 @@ export interface Observation {
   triggers: Trigger[];
 }
 
-export const isObservation = (obj: any): obj is Observation => {
+export const isObservation = (obj: any): boolean => {
   return (
     obj !== null &&
     obj !== undefined &&
@@ -22,7 +22,7 @@ export const isObservation = (obj: any): obj is Observation => {
   );
 };
 
-export const isObservations = (obj: any): obj is Observations => {
+export const isObservations = (obj: any): boolean => {
   return (
     obj !== null &&
     obj !== undefined &&
