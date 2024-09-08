@@ -9,7 +9,11 @@ import {
   readObservationJson,
   getCurrentDate,
 } from '../utils';
-import { sendBatchResults, sendBatchTrigger } from './sseService';
+import {
+  getBatchJobId,
+  sendBatchResults,
+  sendBatchTrigger,
+} from './sseService';
 
 const watchers: Watcher[] = [];
 
@@ -72,30 +76,31 @@ const initializeListeners = (observation: Observation) => {
         for (const trigger of w.observation.triggers) {
           if (changeContent.includes(trigger.pattern)) {
             console.info(`[info] Triggered the script: ${trigger.script}`);
+            const id = getBatchJobId();
             sendBatchTrigger({
+              id,
               name: w.observation.name,
               script: trigger.script,
-              date: getCurrentDate(),
+              activationTime: getCurrentDate(),
+              results: undefined,
             });
             runCommand(trigger.script)
               .then((res) => {
                 console.info(`[info] Command executed successfully: ${res}`);
                 sendBatchResults({
-                  name: w.observation.name,
-                  script: trigger.script,
+                  id,
                   isSuccess: true,
                   body: res,
-                  date: getCurrentDate(),
+                  completionTime: getCurrentDate(),
                 });
               })
               .catch((err) => {
                 console.error(`[error] ${err}`);
                 sendBatchResults({
-                  name: w.observation.name,
-                  script: trigger.script,
+                  id,
                   isSuccess: false,
                   body: err,
-                  date: getCurrentDate(),
+                  completionTime: getCurrentDate(),
                 });
               });
           }

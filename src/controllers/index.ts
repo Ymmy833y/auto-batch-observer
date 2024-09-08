@@ -2,15 +2,15 @@ import type { Request, Response } from 'express';
 import { getObservations } from '../services/indexService';
 import { updateObservations } from '../services/updateService';
 import { restartObservation } from '../services/observationService';
-import { addClient, getBatchResultsList, removeClient } from '../services/sseService';
+import { addClient, getBatchJobList, removeClient } from '../services/sseService';
 
 export const index = async (req: Request, res: Response) => {
   console.info('[info] index is called.');
 
-  const batchResultsList = getBatchResultsList();
+  const batchJobList = getBatchJobList();
   const observations = await getObservations();
 
-  res.render('index', { batchResultsList, observations });
+  res.render('index', { batchJobList, observations });
 };
 
 export const update = async (req: Request, res: Response) => {

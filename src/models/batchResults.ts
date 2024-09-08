@@ -1,7 +1,6 @@
 export interface BatchResults {
-  name: string;
-  script: string;
+  id: number;
   isSuccess: boolean;
   body: string;
-  date: string;
+  completionTime: string;
 }

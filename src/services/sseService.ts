@@ -1,8 +1,8 @@
 import { Response } from 'express';
-import { BatchResults, BatchTrigger } from '../models';
+import { BatchJob, BatchResults } from '../models';
 
 const clients: Response[] = [];
-const batchResultsList: BatchResults[] = [];
+const batchJobList: BatchJob[] = [];
 
 export const addClient = (res: Response) => {
   clients.push(res);
@@ -13,20 +13,25 @@ export const removeClient = (res: Response) => {
 };
 
 export const sendBatchResults = (batchResults: BatchResults) => {
-  const jsonData = JSON.stringify(batchResults);
-  batchResultsList.push(batchResults);
+  batchJobList[batchResults.id].results = batchResults;
+  const jsonData = JSON.stringify(batchJobList[batchResults.id]);
   clients.forEach((client) => {
     client.write(`event: batchResults\ndata: ${jsonData}\n\n`);
   });
 };
 
-export const sendBatchTrigger = (batchTrigger: BatchTrigger) => {
-  const jsonData = JSON.stringify(batchTrigger);  
+export const sendBatchTrigger = (batchJob: BatchJob) => {
+  const jsonData = JSON.stringify(batchJob);  
+  batchJobList.push(batchJob);
   clients.forEach((client) => {
     client.write(`event: batchTrigger\ndata: ${jsonData}\n\n`);
   });
 };
 
-export const getBatchResultsList = (): BatchResults[] => {
-  return batchResultsList;
+export const getBatchJobList = (): BatchJob[] => {
+  return batchJobList;
 };
+
+export const getBatchJobId = () => {
+  return batchJobList.length;
+}

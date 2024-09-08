@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { index, update, notFound } from '../../src/controllers';
 import { getObservations } from '../../src/services/indexService';
-import { getBatchResultsList } from '../../src/services/sseService';
+import { getBatchJobList } from '../../src/services/sseService';
 import { updateObservations } from '../../src/services/updateService';
 import { restartObservation } from '../../src/services/observationService';
 
@@ -35,24 +35,29 @@ describe('Controllers index Tests', () => {
 
   describe('index', () => {
     it('should render the index view with observations', async () => {
-      const mockBatchResultsList = [{ 
+      const mockBatchJobList = [{
+        id: 1,
         name: 'dummy',
         script: 'dummy script',
-        isSuccess: true,
-        body: 'dummy result',
-        date: '00:00:00'
+        activationTime: '00:00:00',
+        results: {
+          id: 1,
+          isSuccess: true,
+          body: 'dummy result',
+          completionTime: '00:00:00',
+        }
       }];
       const mockObservations = [{ id: 1, name: 'Observation 1' }];
 
-      (getBatchResultsList as jest.Mock).mockReturnValue(mockBatchResultsList);
+      (getBatchJobList as jest.Mock).mockReturnValue(mockBatchJobList);
       (getObservations as jest.Mock).mockResolvedValue(mockObservations);
 
       await index(req as Request, res as Response);
 
-      expect(getBatchResultsList).toHaveBeenCalled();
+      expect(getBatchJobList).toHaveBeenCalled();
       expect(getObservations).toHaveBeenCalled();
       expect(mockRender).toHaveBeenCalledWith('index', {
-        batchResultsList: mockBatchResultsList,
+        batchJobList: mockBatchJobList,
         observations: mockObservations,
       });
     });
