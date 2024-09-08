@@ -2,7 +2,7 @@
   "name": "auto-batch-observer",
   "version": "1.0.0",
   "description": "Watches the logs in real-time and executes batch processes based on the changes detected.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "npm run build && node dist/src/server.js",
     "start:dev": "nodemon --exec ts-node src/server.ts",
