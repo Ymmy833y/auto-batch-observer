@@ -8,7 +8,7 @@
     "start:dev": "nodemon --exec ts-node src/server.ts",
     "test": "jest --runInBand",
     "test:watch": "npm run test -- --watch",
-    "lint": "eslint --flag unstable_ts_config",
+    "lint": "npx eslint .",
     "lint:fix": "eslint --fix",
     "clean": "rm -rf dist",
     "build": "tsc",
@@ -21,6 +21,7 @@
   "license": "MIT",
   "dependencies": {
     "@poppinss/chokidar-ts": "^4.1.0-7",
+    "@types/eslint__js": "^8.42.3",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.1.0",
@@ -32,15 +33,20 @@
     "chokidar": "^3.6.0",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
-    "express": "^4.19.2",
+    "express": "^5.0.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0",
+    "typescript-eslint": "^8.5.0"
   }
 }

@@ -10,6 +10,7 @@ export interface Observation {
   triggers: Trigger[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isObservation = (obj: any): boolean => {
   return (
     obj !== null &&
@@ -22,6 +23,7 @@ export const isObservation = (obj: any): boolean => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isObservations = (obj: any): boolean => {
   return (
     obj !== null &&

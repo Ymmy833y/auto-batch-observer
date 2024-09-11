@@ -28,6 +28,7 @@ const showToast = (batchJob) => {
 
   document.querySelector('#toastContainer').appendChild(newElem);
 
+  // eslint-disable-next-line no-undef
   const toast = new bootstrap.Toast(newElem);
   toast.show();
 
@@ -143,6 +144,7 @@ document.querySelector('#observation-add').addEventListener('click', () => {
   observationsElem.appendChild(newElem);
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const addTrigger = (e) => {
   const id = e.id.replace('triggers-add-', '');
   const ulElem = document.querySelector('#triggers-' + id);
@@ -167,6 +169,7 @@ const addTrigger = (e) => {
   ulElem.appendChild(newLiElem);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const toggleRemoveCheck = (e => {
   const { checked } = e;
 

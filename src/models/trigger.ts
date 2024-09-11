@@ -3,6 +3,7 @@ export interface Trigger {
   script: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isTrigger = (obj: any): obj is Trigger => {
   return (
     obj !== null &&
