@@ -126,7 +126,7 @@ const runCommand = (command: string): Promise<string> => {
         return reject(`Error executing command: ${error.message}`);
       }
       if (stderr) {
-        return reject(`Command stderr: ${stderr}`);
+        console.warn(`[warn] Command stderr: ${stderr}`);
       }
       resolve(stdout);
     });
