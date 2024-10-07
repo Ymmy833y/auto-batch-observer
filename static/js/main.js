@@ -43,18 +43,20 @@ const addBatchResult = (batchJob) => {
   newElem.id = `batchResults-${batchJob.id}`;
   newElem.innerHTML = `
     <a class='d-flex justify-content-between btn px-0' data-bs-toggle='collapse' href='#batchResults-${batchJob.id}-collapse'>
-      <div class='d-flex align-items-center'>
-        <div class="spinner-border spinner-border-sm me-2">
-          <span class="visually-hidden">Loading...</span>
+      <div class='d-flex align-items-center row'>
+        <div class="col-auto">
+            <div class="spinner-border spinner-border-sm me-2 col-auto">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
-        <div class='mb-1 text-start'>
+        <div class='mb-1 text-start col'>
           <h5 class='me-2 mb-1'>${batchJob.name}</h5>
           <span class='me-1'>></span><span class='me-2'>${batchJob.script}</span>
         </div>
       </div>
       <small>${batchJob.activationTime}</small>
     </a>`;
-  batchResultsListElem.appendChild(newElem);
+  batchResultsListElem.insertBefore(newElem, batchResultsListElem.firstChild);
 
   const noneElem = document.querySelector('#batchResults-none');
   if (noneElem) {
@@ -77,11 +79,11 @@ eventSource.addEventListener('batchResults', (event) => {
   const batchResultsElem = document.querySelector(`#batchResults-${batchJob.id}`)
   batchResultsElem.innerHTML = `
     <a class='d-flex justify-content-between btn px-0' data-bs-toggle='collapse' href='#batchResults-${batchJob.id}-collapse'>
-      <div class='d-flex align-items-center'>
-        <svg width='20' height='20' class='text-${batchJob.results.isSuccess ? 'success' : 'danger'} me-2' fill='currentColor'>
+      <div class='d-flex align-items-center row'>
+        <svg width='20' height='20' class='text-${batchJob.results.isSuccess ? 'success' : 'danger'} me-2 col-auto' fill='currentColor'>
           <use xlink:href='#${batchJob.results.isSuccess ? 'check' : 'x'}-circle'></use>
         </svg>
-        <div class='mb-1 text-start'>
+        <div class='mb-1 text-start col'>
           <h5 class='me-2 mb-1'>${batchJob.name}</h5>
           <span class='me-1'>></span><span class='me-2'>${batchJob.script}</span>
         </div>
