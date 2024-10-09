@@ -3,9 +3,10 @@ import { getObservations } from '../services/indexService';
 import { updateObservations } from '../services/updateService';
 import { restartObservation } from '../services/observationService';
 import { addClient, getBatchJobList, removeClient } from '../services/sseService';
+import { logger } from '../utils';
 
 export const index = async (req: Request, res: Response) => {
-  console.info('[info] index is called.');
+  logger.info('index is called');
 
   const batchJobList = getBatchJobList();
   const observations = await getObservations();
@@ -14,7 +15,7 @@ export const index = async (req: Request, res: Response) => {
 };
 
 export const update = async (req: Request, res: Response) => {
-  console.info('[info] update is called.');
+  logger.info('update is called');
 
   try {
     const { index, name, filePath, pattern, script, remove } = req.body;
@@ -23,9 +24,8 @@ export const update = async (req: Request, res: Response) => {
 
     res.redirect('/');
   } catch (error) {
-    console.error('[error] Error updating observations:', error);
-
-    res.status(500).send('An error occurred while updating observations.');
+    logger.error(`Error updating observations: ${error}`);
+    res.status(500).send('An error occurred while updating observations');  
   }
 }
 
@@ -38,7 +38,7 @@ export const events = (req: Request, res: Response) => {
   addClient(res);
 
   req.on('close', () => {
-    console.info('[info] Client connection closed');
+    logger.info('Client connection closed');
     removeClient(res);
     res.end();
   });

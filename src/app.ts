@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import path from "path";
 import * as controller from "./controllers";
 import { beginFileObservation } from "./services/observationService";
+import { logger } from "./utils";
 
 export const createApp = (): Express => {
   const app: Express = express();
@@ -22,7 +23,7 @@ export const createApp = (): Express => {
 };
 
 export const initializeObservation = () => {
-  console.info("[info] Start observing...");
+  logger.info("Start observing...");
 
   beginFileObservation();
 };
