@@ -4,7 +4,7 @@ import {
   finishFileObservation,
 } from "../../src/services/observationService";
 import { Watcher, isObservations } from "../../src/models";
-import { readObservationJson, checkFileExists } from "../../src/utils";
+import { readObservationJson, checkFileExists, logger } from "../../src/utils";
 import chokidar from "chokidar";
 
 jest.mock("../../src/services/observationService", () => ({
@@ -16,6 +16,11 @@ jest.mock("../../src/utils", () => ({
   checkFileExists: jest.fn(),
   getFileSize: jest.fn(),
   getFileEncoding: jest.fn(),
+  logger: {
+    warn: jest.fn(),
+    info: jest.fn(),
+    error: jest.fn(),
+  },
 }));
 
 jest.mock("../../src/models", () => ({
@@ -45,14 +50,10 @@ describe("Services observationService Test", () => {
     it("should log a warning if readObservationJson fails", async () => {
       (readObservationJson as jest.Mock).mockResolvedValue(null);
 
-      console.warn = jest.fn();
-
       await beginFileObservation();
 
       expect(readObservationJson).toHaveBeenCalled();
-      expect(console.warn).toHaveBeenCalledWith(
-        "[warn] Failed to load observations data."
-      );
+      expect(logger.warn).toHaveBeenCalledWith("Failed to load observations data");
       expect(watchers.length).toBe(0);
     });
 
@@ -62,14 +63,10 @@ describe("Services observationService Test", () => {
       });
       (isObservations as jest.Mock).mockReturnValue(false);
 
-      console.warn = jest.fn();
-
       await beginFileObservation();
 
       expect(isObservations).toHaveBeenCalled();
-      expect(console.warn).toHaveBeenCalledWith(
-        "[warn] No files to be observed have been set."
-      );
+      expect(logger.warn).toHaveBeenCalledWith("No files to be observed have been set");
       expect(watchers.length).toBe(0);
     });
 
@@ -106,14 +103,10 @@ describe("Services observationService Test", () => {
       (isObservations as jest.Mock).mockReturnValue(true);
       (checkFileExists as jest.Mock).mockReturnValue(false);
 
-      console.warn = jest.fn();
-
       await beginFileObservation();
 
       expect(checkFileExists).toHaveBeenCalledWith(observation.filePath);
-      expect(console.warn).toHaveBeenCalledWith(
-        "File does not exist: /invalid/path"
-      );
+      expect(logger.warn).toHaveBeenCalledWith("File does not exist: /invalid/path");
       expect(watchers.length).toBe(0);
     });
 

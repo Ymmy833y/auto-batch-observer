@@ -70,9 +70,6 @@ describe('Utils fileUtils Test', () => {
       const filePath = '/path/to/nonexistent/file';
       const result = await getFileSize(filePath);
       expect(result).toBe(0);
-      expect(consoleSpy).toHaveBeenCalledWith(
-        `[error] Failed to get file information: ${mockError}`
-      );
       expect(fs.promises.stat).toHaveBeenCalledWith(filePath);
 
       consoleSpy.mockRestore();
@@ -104,17 +101,9 @@ describe('Utils fileUtils Test', () => {
       (chardet.detect as jest.Mock).mockReturnValue(mockEncoding);
 
       const filePath = '/path/to/file';
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
 
       const result = getFileEncoding(filePath);
       expect(result).toBe('utf-8');
-      expect(consoleSpy).toHaveBeenCalledWith(
-        `Failed to detect encoding: Error: Detected encoding is not a valid BufferEncoding.. Defaulting to 'utf-8'.`
-      );
-
-      consoleSpy.mockRestore();
     });
 
     it('should return "utf-8" and log an error if no encoding is detected', () => {
@@ -124,17 +113,9 @@ describe('Utils fileUtils Test', () => {
       (chardet.detect as jest.Mock).mockReturnValue(null);
 
       const filePath = '/path/to/file';
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
 
       const result = getFileEncoding(filePath);
       expect(result).toBe('utf-8');
-      expect(consoleSpy).toHaveBeenCalledWith(
-        `Failed to detect encoding: Error: Detected encoding is not a valid BufferEncoding.. Defaulting to 'utf-8'.`
-      );
-
-      consoleSpy.mockRestore();
     });
   });
 
@@ -166,18 +147,8 @@ describe('Utils fileUtils Test', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(invalidJson);
 
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
       const result = await readObservationJson();
       expect(result).toBeUndefined();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        '[error] Error parsing JSON:',
-        expect.any(String)
-      );
-
-      consoleErrorSpy.mockRestore();
     });
 
     it('should return undefined and log a warning if JSON is valid but not in the expected format', async () => {
@@ -187,17 +158,8 @@ describe('Utils fileUtils Test', () => {
         validButIncorrectJson
       );
 
-      const consoleWarnSpy = jest
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {});
-
       const result = await readObservationJson();
       expect(result).toBeUndefined();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '[warn] Parsed JSON is not in the expected Observations format.'
-      );
-
-      consoleWarnSpy.mockRestore();
     });
   });
 

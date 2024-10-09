@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as chardet from "chardet";
 import { isObservations, Observations } from "../models";
 import config from "../config";
+import logger from "./logger";
 
 export const checkFileExists = (filePath: string): boolean => {
   return fs.existsSync(filePath);
@@ -12,7 +13,7 @@ export const getFileSize = async (file: string): Promise<number> => {
     .stat(file)
     .then((stats) => stats.size)
     .catch((error) => {
-      console.error(`[error] Failed to get file information: ${error}`);
+      logger.error(`Failed to get file information: ${error}`);
       return 0;
     });
 };
@@ -29,9 +30,7 @@ export const getFileEncoding = (filePath: string): BufferEncoding => {
       throw new Error("Detected encoding is not a valid BufferEncoding.");
     }
   } catch (error) {
-    console.error(
-      `Failed to detect encoding: ${error}. Defaulting to 'utf-8'.`
-    );
+    logger.warn(`Encoding not detected: ${error}, using 'utf-8'`);
     return "utf-8";
   }
 };
@@ -49,13 +48,11 @@ export const readObservationJson = async (): Promise<
     if (isObservations(parsedData)) {
       return parsedData;
     } else {
-      console.warn(
-        "[warn] Parsed JSON is not in the expected Observations format."
-      );
+      logger.warn("Parsed JSON is not in the expected Observations format");
       return undefined;
     }
   } catch (error) {
-    console.error("[error] Error parsing JSON:", String(error));
+    logger.error("Error parsing JSON:", String(error));
     return undefined;
   }
 };

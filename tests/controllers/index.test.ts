@@ -96,7 +96,7 @@ describe('Controllers index Tests', () => {
 
       expect(mockStatus).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith(
-        'An error occurred while updating observations.'
+        'An error occurred while updating observations'
       );
     });
   });

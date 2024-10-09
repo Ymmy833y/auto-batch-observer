@@ -8,6 +8,7 @@ import {
   getFileSize,
   readObservationJson,
   getCurrentDate,
+  logger,
 } from '../utils';
 import {
   getBatchJobId,
@@ -20,12 +21,12 @@ const watchers: Watcher[] = [];
 const beginFileObservation = async () => {
   const jsonData = await readObservationJson();
   if (!jsonData) {
-    console.warn('[warn] Failed to load observations data.');
+    logger.warn('Failed to load observations data');
     return;
   }
 
   if (!isObservations(jsonData)) {
-    console.warn('[warn] No files to be observed have been set.');
+    logger.warn('No files to be observed have been set');
     return;
   }
 
@@ -34,7 +35,7 @@ const beginFileObservation = async () => {
 
 const initializeListeners = (observation: Observation) => {
   if (!checkFileExists(observation.filePath)) {
-    console.warn(`File does not exist: ${observation.filePath}`);
+    logger.warn(`File does not exist: ${observation.filePath}`);
     return;
   }
   const w: Watcher = {
@@ -48,13 +49,13 @@ const initializeListeners = (observation: Observation) => {
   };
 
   w.watcher.on('add', async (file: string) => {
-    console.info(`[info] Observe file: ${file}`);
+    logger.info(`Observe file: ${file}`);
     const size = await getFileSize(file);
     w.lastReadPositionMap.set(file, size);
   });
 
   w.watcher.on('change', async (file: string) => {
-    console.info(`[info] File ${file} has been changed!`);
+    logger.info(`File ${file} has been changed`);
 
     const size = await getFileSize(file);
     const lastReadPosition = w.lastReadPositionMap.get(file) ?? 0;
@@ -75,7 +76,7 @@ const initializeListeners = (observation: Observation) => {
 
         for (const trigger of w.observation.triggers) {
           if (changeContent.includes(trigger.pattern)) {
-            console.info(`[info] Triggered the script: ${trigger.script}`);
+            logger.info(`Triggered the script: ${trigger.script}`);
             const id = getBatchJobId();
             sendBatchTrigger({
               id,
@@ -86,7 +87,7 @@ const initializeListeners = (observation: Observation) => {
             });
             runCommand(trigger.script)
               .then((res) => {
-                console.info(`[info] Command executed successfully: ${res}`);
+                logger.info(`Command executed successfully: \n${res}`);
                 sendBatchResults({
                   id,
                   isSuccess: true,
@@ -95,7 +96,7 @@ const initializeListeners = (observation: Observation) => {
                 });
               })
               .catch((err) => {
-                console.error(`[error] ${err}`);
+                logger.error(`Command terminated abnormally: \n${err}`);
                 sendBatchResults({
                   id,
                   isSuccess: false,
@@ -110,9 +111,7 @@ const initializeListeners = (observation: Observation) => {
         w.lastReadPositionMap.set(file, size);
       })
       .on('error', (err) => {
-        console.error(
-          `[error] An error occurred while loading the file: ${err}`
-        );
+        logger.error(`An error occurred while loading the file: ${err}`);
       });
   });
 
@@ -126,7 +125,7 @@ const runCommand = (command: string): Promise<string> => {
         return reject(`Error executing command: ${error.message}`);
       }
       if (stderr) {
-        console.warn(`[warn] Command stderr: ${stderr}`);
+        logger.warn(`Command stderr: ${stderr}`);
       }
       resolve(stdout);
     });
@@ -139,7 +138,7 @@ const finishFileObservation = async () => {
 };
 
 const restartObservation = async () => {
-  console.info('[info] Restart observing...');
+  logger.info('Restart observing...');
   await finishFileObservation();
   await beginFileObservation();
 };

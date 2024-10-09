@@ -1,6 +1,7 @@
 import http, { Server } from "http";
 import { createApp, initializeObservation } from "./app";
 import config from "./config";
+import { logger } from "./utils";
 
 let server: Server;
 
@@ -11,12 +12,12 @@ const startServer = (): Promise<Server> => {
     server = http.createServer(app);
 
     server.listen(config.port, config.host, () => {
-      console.info(`[info] Server is running on http://${config.host}:${config.port}`);
+      logger.info(`Server is running on http://${config.host}:${config.port}`);
       resolve(server);
     });
 
     server.on("error", (error: NodeJS.ErrnoException) => {
-      console.error("[error] Failed to start server: ", error);
+      logger.error("Failed to start server: ", error);
       reject(error);
     });
   });
@@ -25,14 +26,14 @@ const startServer = (): Promise<Server> => {
 startServer()
   .then(() => initializeObservation())
   .catch((error) => {
-    console.error("[error] Server failed to start: ", error);
+    logger.error("Server failed to start: ", error);
   });
 
 process.on("SIGTERM", () => {
-  console.info("[info] SIGTERM signal received: closing HTTP server");
+  logger.info("SIGTERM signal received: closing HTTP server");
   if (server) {
     server.close(() => {
-      console.info("[info] HTTP server closed");
+      logger.info("HTTP server closed");
     });
   }
 });
